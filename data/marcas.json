@@ -1,0 +1,26 @@
+[
+  {
+    "id": "8d1f0c3a-1b7e-4a52-9a0e-2f6b1c9d4e01",
+    "nome": "Casa Brisa",
+    "slug": "casa-brisa",
+    "descricao": "Peças leves em linho e algodão para dias de sol.",
+    "logo": null,
+    "estilo": "serifa"
+  },
+  {
+    "id": "5a7e2b9c-3d4f-4e61-8b2a-7c9d0e1f2a02",
+    "nome": "Serra Alta",
+    "slug": "serra-alta",
+    "descricao": "Lã, couro e camadas quentes para a serra e a cidade fria.",
+    "logo": null,
+    "estilo": "caixa-alta"
+  },
+  {
+    "id": "c3b9d8e7-6f5a-4b3c-9d2e-1a0b9c8d7e03",
+    "nome": "Maré Mansa",
+    "slug": "mare-mansa",
+    "descricao": "Básicos coloridos e tênis confortáveis para o dia a dia.",
+    "logo": null,
+    "estilo": "italico"
+  }
+]
