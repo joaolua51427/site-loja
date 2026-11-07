@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { GaleriaProduto, type FotoProduto } from "@/components/loja/galeria-produto";
 import { NomeMarca } from "@/components/loja/nome-marca";
 import { CardProduto } from "@/components/loja/card-produto";
+import { CarrosselProdutos } from "@/components/loja/carrossel-produtos";
 import { SeletorProduto } from "@/components/loja/seletor-produto";
 import { SelosConfianca } from "@/components/loja/selos-confianca";
 import { getMarcas, getProduto, getProdutosDaMarca } from "@/lib/catalogo";
@@ -26,9 +27,9 @@ async function Conteudo({ params }: { params: PageProps<"/marcas/[marca]/[produt
   const achado = getProduto(marcaSlug, produtoSlug);
   if (!achado) notFound();
   const { marca, produto } = achado;
-  // Outras peças da mesma marca (até 4). Se a marca só tiver esta peça, a seção não aparece.
+  // Outras peças da mesma marca (até 8). Se a marca só tiver esta peça, a seção não aparece.
   const daMarca = getProdutosDaMarca(marca.id).filter((p) => p.id !== produto.id);
-  const combina = daMarca.slice(0, 4);
+  const combina = daMarca.slice(0, 8);
   const corPrincipal = produto.cores[0].nome.toLowerCase();
 
   const fotos: FotoProduto[] = [
@@ -49,10 +50,10 @@ async function Conteudo({ params }: { params: PageProps<"/marcas/[marca]/[produt
         </ol>
       </nav>
 
-      <div className="mt-8 grid items-start gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] md:gap-14">
+      <div className="mt-8 grid items-start gap-10 md:grid-cols-[minmax(0,1.25fr)_minmax(0,26rem)] md:gap-16">
         <GaleriaProduto fotos={fotos} nomeTransicao={`produto-${produto.id}`} />
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 md:sticky md:top-28 md:self-start">
           <div className="flex flex-col gap-2">
             <Link href={`/marcas/${marca.slug}`} className="self-start text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
               <NomeMarca marca={marca} className="text-lg" />
@@ -74,19 +75,18 @@ async function Conteudo({ params }: { params: PageProps<"/marcas/[marca]/[produt
       </div>
 
       {combina.length > 0 && (
-        <section aria-labelledby="titulo-combine" className="mt-24 border-t border-border pt-14">
-          <div className="mb-8 flex items-end justify-between gap-4">
-            <h2 id="titulo-combine" className="font-display text-3xl font-light tracking-tight sm:text-4xl">Combine com</h2>
-            <Link href={`/marcas/${marca.slug}`} className="rotulo linha-crescente pb-1 text-muted-foreground hover:text-foreground hover:[background-size:100%_1px]">Ver tudo da {marca.nome}</Link>
-          </div>
-          <ul className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
-            {combina.map((p, i) => (
-              <li key={p.id} className="revelar-cascata" style={{ ["--i" as string]: i % 4 }}>
+        <div className="mt-24 border-t border-border pt-14">
+          <CarrosselProdutos
+            titulo="Combine com"
+            acao={<Link href={`/marcas/${marca.slug}`} className="rotulo linha-crescente hidden pb-1 text-muted-foreground hover:text-foreground hover:[background-size:100%_1px] sm:inline-flex">Ver tudo da {marca.nome}</Link>}
+          >
+            {combina.map((p) => (
+              <li key={p.id}>
                 <CardProduto produto={p} marcaSlug={marca.slug} precoFormatado={formatarPreco(p.precoCentavos)} />
               </li>
             ))}
-          </ul>
-        </section>
+          </CarrosselProdutos>
+        </div>
       )}
     </div>
   );

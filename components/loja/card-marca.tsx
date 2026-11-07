@@ -14,7 +14,7 @@ export function CardMarca({ marca, totalPecas }: { marca: Marca; totalPecas: num
     >
       <span className="rotulo text-muted-foreground">{totalPecas} {totalPecas === 1 ? "peça" : "peças"}</span>
       <ViewTransition name={`marca-${marca.slug}`}>
-        <NomeMarca marca={marca} className="inline-block max-w-full break-words text-[clamp(1.75rem,3.2vw,2.75rem)] leading-tight transition-opacity duration-500 group-hover:opacity-80 motion-reduce:transition-none" />
+        <NomeMarca marca={marca} className={`inline-block max-w-full leading-tight transition-opacity duration-500 group-hover:opacity-80 motion-reduce:transition-none ${marca.nome.length > 9 ? "text-[clamp(1.4rem,2.3vw,2rem)]" : "text-[clamp(1.75rem,3.2vw,2.75rem)]"}`} />
       </ViewTransition>
       <span className="flex items-end justify-between gap-4">
         <span className="max-w-[30ch] text-sm leading-relaxed text-muted-foreground">{marca.descricao}</span>

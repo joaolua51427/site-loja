@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { Magnetico } from "@/components/interacoes/magnetico";
+import { FundoAnimado } from "@/components/interacoes/fundo-animado";
 import { Parallax } from "@/components/interacoes/parallax";
 import { Logotipo } from "@/components/loja/logotipo";
 import { cn } from "@/lib/utils";
@@ -31,19 +31,14 @@ export function BoasVindas({ nomeLoja, slogan }: { nomeLoja: string; slogan: str
 
   return (
     <main className="relative isolate flex min-h-svh flex-col items-center justify-center overflow-hidden bg-[oklch(0.16_0_0)] px-6 py-16 text-center text-white">
-      <Parallax className="absolute inset-0 -z-20">
-      <Image
-        src="/fundos/santorini-cupulas.webp"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        className={cn(
-          "object-cover object-[50%_40%] transition-[transform,opacity] ease-[cubic-bezier(.4,0,.2,1)] motion-safe:animate-[aproximar_14s_ease-out_both] motion-reduce:transition-none",
-          saindo && "scale-110 opacity-0",
-        )}
-        style={{ transitionDuration: `${DURACAO_SAIDA}ms` }}
-      />
+      <Parallax className={cn("absolute inset-0 -z-20 transition-[transform,opacity] duration-700", saindo && "scale-110 opacity-0")}>
+        <FundoAnimado
+          cenas={[
+            { src: "/fundos/santorini-cupulas.webp", posicao: "50% 40%", movimento: "aproximar" },
+            { src: "/fundos/santorini-oia.webp", posicao: "50% 50%", movimento: "panoramica" },
+            { src: "/fundos/santorini-escadaria.webp", posicao: "50% 55%", movimento: "afastar" },
+          ]}
+        />
       </Parallax>
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-b from-black/45 via-black/35 to-black/65" />
       <div aria-hidden="true" className="absolute inset-0 -z-10" style={{ background: "radial-gradient(60% 45% at 50% 50%, rgb(0 0 0 / 0.35), transparent 75%)" }} />

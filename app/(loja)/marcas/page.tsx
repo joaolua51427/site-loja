@@ -3,7 +3,7 @@ import Image from "next/image";
 
 import { Parallax } from "@/components/interacoes/parallax";
 import { CardMarca } from "@/components/loja/card-marca";
-import { FaixaMarcas } from "@/components/loja/faixa-marcas";
+import { CilindroMarcas } from "@/components/loja/cilindro-marcas";
 import { Manifesto } from "@/components/loja/manifesto";
 import { SelosConfianca } from "@/components/loja/selos-confianca";
 import { getMarcas, getProdutosDaMarca } from "@/lib/catalogo";
@@ -31,7 +31,7 @@ export default function PaginaMarcas() {
         texto="Peças que não precisam de explicação. Couro, camurça e algodão escolhidos para o homem que se veste com intenção."
       />
 
-      <FaixaMarcas marcas={marcas} />
+      <CilindroMarcas marcas={marcas.map((m) => ({ nome: m.nome, slug: m.slug }))} />
 
       <div id="marcas" className="mx-auto flex w-full max-w-6xl scroll-mt-24 flex-col gap-10 px-4 py-20 sm:px-6 sm:py-24">
         <div className="flex flex-col gap-3">

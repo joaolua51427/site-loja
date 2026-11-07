@@ -50,3 +50,7 @@ export function getProdutoPorId(id: string): Produto | undefined {
 export function getMarcaPorId(id: string): Marca | undefined {
   return marcas.find((m) => m.id === id);
 }
+
+export function getTodosProdutos(): Produto[] {
+  return produtos;
+}

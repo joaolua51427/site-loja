@@ -247,3 +247,13 @@ html { scroll-behavior: smooth; }
   .revelar-cascata, .palavra-acende { animation: none !important; }
   .faixa-deslizante { animation: none !important; transform: none !important; }
 }
+
+/* Fundo animado da página inicial */
+@keyframes ken-aproximar { from { transform: scale(1.02) translate3d(0, 0, 0); } to { transform: scale(1.16) translate3d(-1.5%, -1%, 0); } }
+@keyframes ken-afastar { from { transform: scale(1.18) translate3d(1.5%, 1%, 0); } to { transform: scale(1.04) translate3d(0, 0, 0); } }
+@keyframes ken-panoramica { from { transform: scale(1.14) translate3d(-3%, 0, 0); } to { transform: scale(1.14) translate3d(3%, 0, 0); } }
+@keyframes grao {
+  0% { transform: translate(0, 0); } 25% { transform: translate(-5%, 3%); }
+  50% { transform: translate(4%, -4%); } 75% { transform: translate(-3%, 5%); } 100% { transform: translate(0, 0); }
+}
+@keyframes progresso { from { width: 0; } to { width: 100%; } }

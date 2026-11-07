@@ -3,23 +3,33 @@ import Link from "next/link";
 import { CabecalhoRolagem } from "@/components/loja/cabecalho-rolagem";
 import { ContadorCarrinho } from "@/components/loja/contador-carrinho";
 import { Logotipo } from "@/components/loja/logotipo";
+import { Navegacao, type ItemBusca, type ItemMenuMarca } from "@/components/loja/navegacao";
+import { getMarcaPorId, getMarcas, getProdutosDaMarca, getTodosProdutos } from "@/lib/catalogo";
+import { formatarPreco } from "@/lib/formatar";
 
 export function Cabecalho({ nomeLoja }: { nomeLoja: string }) {
+  // Só dados públicos vão para o navegador: nome, coleção, foto e preço formatado.
+  const marcas: ItemMenuMarca[] = getMarcas().map((m) => ({ nome: m.nome, slug: m.slug, total: getProdutosDaMarca(m.id).length }));
+  const produtos: ItemBusca[] = getTodosProdutos().map((p) => {
+    const marca = getMarcaPorId(p.marcaId);
+    return { id: p.id, nome: p.nome, marca: marca?.nome ?? "", href: `/marcas/${marca?.slug}/${p.slug}`, imagem: p.imagens.frente, preco: formatarPreco(p.precoCentavos) };
+  });
+  // Destaque: a primeira peça de cada uma das três primeiras coleções.
+  const destaques = getMarcas().slice(0, 3).map((m) => produtos.find((p) => p.href.startsWith(`/marcas/${m.slug}/`))).filter((p): p is ItemBusca => Boolean(p));
+
   return (
     <CabecalhoRolagem>
-    <header className="border-b border-border bg-background/90 backdrop-blur-md">
-      <div className="mx-auto grid h-20 w-full max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6">
-        <nav aria-label="Principal" className="flex items-center gap-1">
-          <Link href="/marcas" className="rotulo linha-crescente inline-flex min-h-11 items-center px-2 outline-none transition-colors hover:text-egeu hover:[background-size:100%_1px] focus-visible:ring-2 focus-visible:ring-ring">Marcas</Link>
-        </nav>
-        <Link href="/" aria-label={`${nomeLoja}, início`} className="outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <Logotipo nome={nomeLoja} />
-        </Link>
-        <div className="flex justify-end">
-          <ContadorCarrinho />
+      <header className="relative border-b border-border bg-background/90 backdrop-blur-md">
+        <div className="mx-auto grid h-20 w-full max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6">
+          <Navegacao marcas={marcas} produtos={produtos} destaques={destaques} />
+          <Link href="/" aria-label={`${nomeLoja}, início`} className="outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <Logotipo nome={nomeLoja} />
+          </Link>
+          <div className="flex justify-end">
+            <ContadorCarrinho />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
     </CabecalhoRolagem>
   );
 }
