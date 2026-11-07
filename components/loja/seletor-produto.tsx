@@ -5,16 +5,21 @@ import Link from "next/link";
 
 import { validarItemCarrinho } from "@/app/actions/carrinho";
 import { useCarrinho } from "@/components/loja/carrinho-provider";
+import { AvisoCarrinho } from "@/components/loja/aviso-carrinho";
+import { Magnetico } from "@/components/interacoes/magnetico";
+import { voarAoCarrinho } from "@/components/interacoes/voar-ao-carrinho";
 import type { Cor } from "@/lib/catalogo-schema";
 import { cn } from "@/lib/utils";
 
 type Estado = { tipo: "ocioso" } | { tipo: "enviando" } | { tipo: "ok" } | { tipo: "erro"; mensagem: string };
 
-export function SeletorProduto({ produtoId, tamanhos, cores }: { produtoId: string; tamanhos: string[]; cores: Cor[] }) {
+export function SeletorProduto({ produtoId, nome, imagem, tamanhos, cores }: { produtoId: string; nome: string; imagem: string; tamanhos: string[]; cores: Cor[] }) {
   const { adicionar } = useCarrinho();
   const [tamanho, setTamanho] = React.useState<string | null>(null);
   const [cor, setCor] = React.useState(cores[0]?.nome ?? "");
   const [estado, setEstado] = React.useState<Estado>({ tipo: "ocioso" });
+  const [aviso, setAviso] = React.useState(false);
+  const fecharAviso = React.useCallback(() => setAviso(false), []);
   const id = React.useId();
 
   async function enviar(evento: React.FormEvent) {
@@ -32,6 +37,8 @@ export function SeletorProduto({ produtoId, tamanhos, cores }: { produtoId: stri
       }
       adicionar(resposta.item);
       setEstado({ tipo: "ok" });
+      voarAoCarrinho(document.querySelector("[data-foto-produto] img"));
+      setAviso(true);
     } catch {
       setEstado({ tipo: "erro", mensagem: "Não foi possível adicionar este item. Tente novamente." });
     }
@@ -60,7 +67,7 @@ export function SeletorProduto({ produtoId, tamanhos, cores }: { produtoId: stri
           {tamanhos.map((t) => (
             <label key={t} className="cursor-pointer">
               <input type="radio" name={`${id}-tamanho`} value={t} checked={tamanho === t} onChange={() => { setTamanho(t); if (estado.tipo === "erro") setEstado({ tipo: "ocioso" }); }} className="peer sr-only" />
-              <span className="flex size-12 items-center justify-center rounded-[2px] border border-border text-sm tabular-nums transition-colors peer-checked:border-foreground peer-checked:bg-foreground peer-checked:text-background peer-focus-visible:ring-2 peer-focus-visible:ring-ring hover:border-foreground/40">
+              <span className="flex size-12 items-center justify-center rounded-[2px] border border-border text-sm tabular-nums transition-colors peer-checked:border-foreground peer-checked:bg-foreground peer-checked:text-background transition-transform active:scale-90 peer-focus-visible:ring-2 peer-focus-visible:ring-ring hover:border-foreground/40">
                 {t}
               </span>
             </label>
@@ -69,15 +76,17 @@ export function SeletorProduto({ produtoId, tamanhos, cores }: { produtoId: stri
       </fieldset>
 
       <div className="flex flex-col gap-3">
+        <Magnetico className="sm:self-start">
         <button
           type="submit"
           disabled={estado.tipo === "enviando"}
           className={cn(
-            "inline-flex min-h-12 items-center justify-center rounded-none bg-foreground px-8 rotulo text-background outline-none botao-varredura hover:-translate-y-px focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-60 motion-reduce:transition-none sm:self-start",
+            "inline-flex min-h-12 items-center justify-center rounded-none bg-foreground px-8 rotulo text-background outline-none botao-varredura hover:-translate-y-px focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-60 motion-reduce:transition-none active:scale-[0.98]",
           )}
         >
           {estado.tipo === "enviando" ? "Adicionando…" : "Adicionar ao carrinho"}
         </button>
+        </Magnetico>
         <p aria-live="polite" className="min-h-5 text-sm">
           {estado.tipo === "erro" && <span className="text-destructive">{estado.mensagem}</span>}
           {estado.tipo === "ok" && (
@@ -85,6 +94,7 @@ export function SeletorProduto({ produtoId, tamanhos, cores }: { produtoId: stri
           )}
         </p>
       </div>
+      <AvisoCarrinho aberto={aviso} aoFechar={fecharAviso} nome={nome} detalhe={`Tamanho ${tamanho ?? ""} · ${cor}`} imagem={imagem} />
     </form>
   );
 }

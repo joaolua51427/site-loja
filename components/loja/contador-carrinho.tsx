@@ -9,7 +9,7 @@ export function ContadorCarrinho() {
   const { totalItens, pronto } = useCarrinho();
   const rotulo = totalItens === 1 ? "1 item" : `${totalItens} itens`;
   return (
-    <Link href="/carrinho" className="inline-flex min-h-11 items-center gap-2 rounded-none px-2 rotulo text-foreground outline-none transition-colors hover:text-egeu focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Carrinho, ${rotulo}`}>
+    <Link href="/carrinho" data-alvo-carrinho className="inline-flex min-h-11 items-center gap-2 rounded-none px-2 rotulo text-foreground outline-none transition-colors hover:text-egeu focus-visible:ring-2 focus-visible:ring-ring" aria-label={`Carrinho, ${rotulo}`}>
       <ShoppingBag aria-hidden="true" className="size-4" />
       <span className="hidden sm:inline">Carrinho</span>
       {pronto && totalItens > 0 && (

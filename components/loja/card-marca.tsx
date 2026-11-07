@@ -9,6 +9,7 @@ export function CardMarca({ marca, totalPecas }: { marca: Marca; totalPecas: num
   return (
     <Link
       href={`/marcas/${marca.slug}`}
+      data-cursor="Entrar"
       className="group flex h-full min-h-64 min-w-0 flex-col overflow-hidden justify-between gap-10 bg-background p-8 text-foreground outline-none transition-colors duration-500 hover:bg-card focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring motion-reduce:transition-none"
     >
       <span className="rotulo text-muted-foreground">{totalPecas} {totalPecas === 1 ? "peça" : "peças"}</span>

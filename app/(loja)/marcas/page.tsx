@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 
+import { Parallax } from "@/components/interacoes/parallax";
 import { CardMarca } from "@/components/loja/card-marca";
 import { FaixaMarcas } from "@/components/loja/faixa-marcas";
 import { Manifesto } from "@/components/loja/manifesto";
@@ -14,7 +15,9 @@ export default function PaginaMarcas() {
   return (
     <div className="animate-in fade-in [animation-duration:700ms] motion-reduce:animate-none">
       <section className="relative isolate flex min-h-[46svh] items-end overflow-hidden bg-[oklch(0.2_0_0)] text-white">
-        <Image src="/fundos/santorini-oia.webp" alt="" fill priority sizes="100vw" className="-z-20 object-cover object-[50%_45%] motion-safe:animate-[aproximar_16s_ease-out_both]" />
+        <Parallax mouse={10} rolagem={0.25} className="absolute inset-0 -z-20">
+          <Image src="/fundos/santorini-oia.webp" alt="" fill priority sizes="100vw" className="object-cover object-[50%_45%] motion-safe:animate-[aproximar_16s_ease-out_both]" />
+        </Parallax>
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-black/70 via-black/25 to-black/10" />
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 pb-12 pt-24 sm:px-6 sm:pb-16">
           <p className="rotulo animate-in fade-in fill-mode-both text-white/80 [animation-delay:150ms] [animation-duration:900ms] motion-reduce:animate-none">Nova coleção</p>

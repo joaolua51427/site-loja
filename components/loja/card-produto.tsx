@@ -2,6 +2,7 @@ import { ViewTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { Inclinar } from "@/components/interacoes/inclinar";
 import type { Produto } from "@/lib/catalogo-schema";
 
 export function CardProduto({ produto, marcaSlug, precoFormatado }: { produto: Produto; marcaSlug: string; precoFormatado: string }) {
@@ -9,8 +10,10 @@ export function CardProduto({ produto, marcaSlug, precoFormatado }: { produto: P
   return (
     <Link
       href={`/marcas/${marcaSlug}/${produto.slug}`}
+      data-cursor="Ver"
       className="group flex flex-col gap-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
     >
+      <Inclinar>
       <ViewTransition name={`produto-${produto.id}`}>
         <span className="relative block aspect-[200/310] overflow-hidden rounded-[2px] bg-muted/70">
           <Image
@@ -36,6 +39,7 @@ export function CardProduto({ produto, marcaSlug, precoFormatado }: { produto: P
           </span>
         </span>
       </ViewTransition>
+      </Inclinar>
       <span className="flex flex-col gap-1 px-1">
         <span className="linha-crescente self-start text-sm font-medium group-hover:[background-size:100%_1px]">{produto.nome}</span>
         <span className="text-xs text-muted-foreground">{produto.cores.map((c) => c.nome).join(" · ")}</span>

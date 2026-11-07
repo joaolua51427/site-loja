@@ -66,7 +66,7 @@ async function Conteudo({ params }: { params: PageProps<"/marcas/[marca]/[produt
               {produto.detalhes.map((d) => <li key={d} className="rounded-[2px] border border-border px-3 py-1 text-xs text-muted-foreground">{d}</li>)}
             </ul>
           )}
-          <SeletorProduto produtoId={produto.id} tamanhos={produto.tamanhos} cores={produto.cores} />
+          <SeletorProduto produtoId={produto.id} nome={produto.nome} imagem={produto.imagens.frente} tamanhos={produto.tamanhos} cores={produto.cores} />
           <div className="border-t border-border pt-6">
             <SelosConfianca compacto />
           </div>

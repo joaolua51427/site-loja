@@ -27,6 +27,7 @@ export function GaleriaProduto({ fotos, nomeTransicao }: { fotos: FotoProduto[];
       <ViewTransition name={nomeTransicao}>
       <div
         ref={caixa}
+        data-foto-produto
         onPointerEnter={(e) => { if (e.pointerType !== "touch") setZoom(true); }}
         onPointerLeave={() => setZoom(false)}
         onPointerMove={mover}

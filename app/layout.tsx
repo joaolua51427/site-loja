@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Geist, Geist_Mono } from "next/font/google";
 
+import { CursorKyano } from "@/components/interacoes/cursor";
 import { CarrinhoProvider } from "@/components/loja/carrinho-provider";
 import { getLoja } from "@/lib/catalogo";
 import "./globals.css";
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="pt-BR" className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <CarrinhoProvider>{children}</CarrinhoProvider>
+        <CursorKyano />
       </body>
     </html>
   );
