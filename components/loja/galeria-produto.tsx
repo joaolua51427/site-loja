@@ -12,7 +12,7 @@ export function GaleriaProduto({ fotos }: { fotos: FotoProduto[] }) {
   const foto = fotos[atual] ?? fotos[0];
   return (
     <div className="flex flex-col gap-4">
-      <div className="relative mx-auto aspect-[200/310] w-full max-w-md overflow-hidden rounded-3xl bg-muted/60">
+      <div className="relative mx-auto aspect-[200/310] w-full max-w-md overflow-hidden rounded-[2px] bg-muted/60">
         <Image key={foto.src} src={foto.src} alt={foto.alt} fill priority sizes="(min-width: 768px) 28rem, 90vw" className="animate-in fade-in object-contain p-6 [animation-duration:300ms] motion-reduce:animate-none" />
       </div>
       {fotos.length > 1 && (
@@ -25,7 +25,7 @@ export function GaleriaProduto({ fotos }: { fotos: FotoProduto[] }) {
               aria-label={`Ver foto: ${f.rotulo}`}
               onClick={() => setAtual(i)}
               className={cn(
-                "relative aspect-[200/310] w-16 overflow-hidden rounded-xl border bg-muted/60 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+                "relative aspect-[200/310] w-16 overflow-hidden rounded-[2px] border bg-muted/60 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
                 i === atual ? "border-foreground" : "border-transparent hover:border-foreground/30",
               )}
             >

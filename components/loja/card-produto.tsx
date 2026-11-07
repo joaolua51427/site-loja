@@ -7,9 +7,9 @@ export function CardProduto({ produto, marcaSlug, precoFormatado }: { produto: P
   return (
     <Link
       href={`/marcas/${marcaSlug}/${produto.slug}`}
-      className="group flex flex-col gap-3 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+      className="group flex flex-col gap-3 rounded-[2px] outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
     >
-      <span className="relative block aspect-[200/310] overflow-hidden rounded-2xl bg-muted/60">
+      <span className="relative block aspect-[200/310] overflow-hidden rounded-[2px] bg-muted/60">
         <Image
           src={produto.imagens.frente}
           alt={`${produto.nome}, cor ${produto.cores[0].nome.toLowerCase()}`}

@@ -938,7 +938,7 @@ export function ClothingRailHero({
       {(eyebrow || heading) && (
         <header className="relative z-10 flex flex-col items-center gap-2 px-6 pt-8 text-center">
           {eyebrow && <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-muted-foreground">{eyebrow}</p>}
-          {heading && <h2 className="text-balance text-2xl font-medium tracking-tight sm:text-3xl">{heading}</h2>}
+          {heading && <h2 className="text-balance font-display text-3xl font-light tracking-tight sm:text-4xl">{heading}</h2>}
         </header>
       )}
 

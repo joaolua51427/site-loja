@@ -57,7 +57,7 @@ export default async function PaginaMarca({ params }: PageProps<"/marcas/[marca]
       )}
 
       <section id="colecao" aria-labelledby="titulo-colecao" className="mx-auto w-full max-w-6xl scroll-mt-20 px-4 pb-20 pt-6 sm:px-6">
-        <h2 id="titulo-colecao" className="mb-6 font-display text-3xl font-medium tracking-tight">Coleção completa</h2>
+        <h2 id="titulo-colecao" className="mb-6 font-display text-3xl font-light tracking-tight">Coleção completa</h2>
         <ul className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
           {produtos.map((p) => (
             <li key={p.id}><CardProduto produto={p} marcaSlug={marca.slug} precoFormatado={formatarPreco(p.precoCentavos)} /></li>

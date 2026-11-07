@@ -51,13 +51,13 @@ export default async function PaginaProduto({ params }: PageProps<"/marcas/[marc
             <Link href={`/marcas/${marca.slug}`} className="self-start text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
               <NomeMarca marca={marca} className="text-lg" />
             </Link>
-            <h1 className="font-display text-4xl font-medium tracking-tight sm:text-5xl">{produto.nome}</h1>
+            <h1 className="font-display text-4xl font-light tracking-tight sm:text-5xl">{produto.nome}</h1>
             <p className="text-xl tabular-nums">{formatarPreco(produto.precoCentavos)}</p>
           </div>
           <p className="leading-relaxed text-muted-foreground">{produto.descricao}</p>
           {produto.detalhes.length > 0 && (
             <ul className="flex flex-wrap gap-2" aria-label="Detalhes">
-              {produto.detalhes.map((d) => <li key={d} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">{d}</li>)}
+              {produto.detalhes.map((d) => <li key={d} className="rounded-[2px] border border-border px-3 py-1 text-xs text-muted-foreground">{d}</li>)}
             </ul>
           )}
           <SeletorProduto produtoId={produto.id} tamanhos={produto.tamanhos} cores={produto.cores} />

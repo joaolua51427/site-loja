@@ -1,16 +1,21 @@
 import Link from "next/link";
 
 import { ContadorCarrinho } from "@/components/loja/contador-carrinho";
+import { Logotipo } from "@/components/loja/logotipo";
 
 export function Cabecalho({ nomeLoja }: { nomeLoja: string }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="font-display text-2xl tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring">{nomeLoja}</Link>
-        <nav aria-label="Principal" className="flex items-center gap-1 text-sm">
-          <Link href="/marcas" className="inline-flex min-h-11 items-center rounded-full px-3 outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring">Marcas</Link>
-          <ContadorCarrinho />
+    <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-md">
+      <div className="mx-auto grid h-20 w-full max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6">
+        <nav aria-label="Principal" className="flex items-center gap-1">
+          <Link href="/marcas" className="rotulo inline-flex min-h-11 items-center px-2 outline-none transition-colors hover:text-egeu focus-visible:ring-2 focus-visible:ring-ring">Marcas</Link>
         </nav>
+        <Link href="/" aria-label={`${nomeLoja}, início`} className="outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <Logotipo nome={nomeLoja} />
+        </Link>
+        <div className="flex justify-end">
+          <ContadorCarrinho />
+        </div>
       </div>
     </header>
   );

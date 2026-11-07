@@ -41,9 +41,9 @@ export function ListaCarrinho() {
   if (erro) return <p className="text-sm text-destructive">Não foi possível carregar o carrinho agora. Atualize a página e tente de novo.</p>;
   if (!resumo || resumo.linhas.length === 0) {
     return (
-      <div className="flex flex-col items-start gap-4 rounded-2xl border border-dashed border-border p-8">
+      <div className="flex flex-col items-start gap-4 rounded-[2px] border border-dashed border-border p-8">
         <p className="text-base">Seu carrinho está vazio.</p>
-        <Link href="/marcas" className="inline-flex min-h-11 items-center rounded-full bg-foreground px-6 text-sm font-medium text-background outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">Ver marcas</Link>
+        <Link href="/marcas" className="inline-flex min-h-11 items-center rounded-none bg-foreground px-6 rotulo text-background outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">Ver marcas</Link>
       </div>
     );
   }
@@ -53,7 +53,7 @@ export function ListaCarrinho() {
       <ul className="flex flex-col divide-y divide-border">
         {resumo.linhas.map((l) => (
           <li key={l.chave} className="flex gap-4 py-5">
-            <div className="relative aspect-[200/310] w-20 shrink-0 overflow-hidden rounded-xl bg-muted/60">
+            <div className="relative aspect-[200/310] w-20 shrink-0 overflow-hidden rounded-[2px] bg-muted/60">
               <Image src={l.imagem} alt={`${l.nome}, cor ${l.cor.toLowerCase()}`} fill sizes="5rem" className="object-contain p-1.5" />
             </div>
             <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -63,15 +63,15 @@ export function ListaCarrinho() {
                   <p className="font-medium">{l.nome}</p>
                   <p className="text-sm text-muted-foreground">Tamanho {l.tamanho} · {l.cor}</p>
                 </div>
-                <button type="button" onClick={() => remover(l.chave)} aria-label={`Remover ${l.nome} do carrinho`} className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
+                <button type="button" onClick={() => remover(l.chave)} aria-label={`Remover ${l.nome} do carrinho`} className="inline-flex size-11 shrink-0 items-center justify-center rounded-none text-muted-foreground outline-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
                   <X aria-hidden="true" className="size-4" />
                 </button>
               </div>
               <div className="mt-2 flex items-center justify-between gap-3">
-                <div className="flex items-center rounded-full border border-border" role="group" aria-label={`Quantidade de ${l.nome}`}>
-                  <button type="button" onClick={() => alterarQuantidade(l.chave, l.quantidade - 1)} disabled={l.quantidade <= 1} aria-label="Diminuir quantidade" className="inline-flex size-11 items-center justify-center rounded-full outline-none disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-ring"><Minus aria-hidden="true" className="size-3.5" /></button>
+                <div className="flex items-center rounded-none border border-border" role="group" aria-label={`Quantidade de ${l.nome}`}>
+                  <button type="button" onClick={() => alterarQuantidade(l.chave, l.quantidade - 1)} disabled={l.quantidade <= 1} aria-label="Diminuir quantidade" className="inline-flex size-11 items-center justify-center rounded-none outline-none disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-ring"><Minus aria-hidden="true" className="size-3.5" /></button>
                   <span className="w-6 text-center text-sm tabular-nums" aria-live="polite">{l.quantidade}</span>
-                  <button type="button" onClick={() => alterarQuantidade(l.chave, l.quantidade + 1)} disabled={l.quantidade >= 10} aria-label="Aumentar quantidade" className="inline-flex size-11 items-center justify-center rounded-full outline-none disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-ring"><Plus aria-hidden="true" className="size-3.5" /></button>
+                  <button type="button" onClick={() => alterarQuantidade(l.chave, l.quantidade + 1)} disabled={l.quantidade >= 10} aria-label="Aumentar quantidade" className="inline-flex size-11 items-center justify-center rounded-none outline-none disabled:opacity-40 focus-visible:ring-2 focus-visible:ring-ring"><Plus aria-hidden="true" className="size-3.5" /></button>
                 </div>
                 <p className="text-sm tabular-nums">{formatarPreco(l.subtotalCentavos)}</p>
               </div>
@@ -80,14 +80,14 @@ export function ListaCarrinho() {
         ))}
       </ul>
 
-      <aside aria-label="Resumo do pedido" className="flex h-fit flex-col gap-4 rounded-2xl border border-border p-6">
+      <aside aria-label="Resumo do pedido" className="flex h-fit flex-col gap-4 rounded-[2px] border border-border p-6">
         <div className="flex items-baseline justify-between">
           <span className="text-sm text-muted-foreground">Subtotal</span>
           <span className="text-lg font-medium tabular-nums">{formatarPreco(resumo.totalCentavos)}</span>
         </div>
         <p className="text-xs leading-relaxed text-muted-foreground">Valores conferidos pelo servidor. Frete e pagamento são calculados no checkout.</p>
         {houveDescarte && <p className="text-xs text-destructive">Alguns itens não estão mais disponíveis e foram retirados do cálculo.</p>}
-        <button type="button" disabled className="inline-flex min-h-12 items-center justify-center rounded-full bg-foreground px-6 text-sm font-medium text-background opacity-50">
+        <button type="button" disabled className="inline-flex min-h-12 items-center justify-center rounded-none bg-foreground px-6 rotulo text-background opacity-50">
           Finalizar compra (em breve)
         </button>
       </aside>
