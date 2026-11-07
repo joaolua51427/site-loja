@@ -1,6 +1,11 @@
 -- Marcas, produtos e perfis (papel cliente/admin), com RLS em todas as tabelas.
 -- Rodar primeiro no projeto de TESTE do Supabase, nunca direto em produção.
 
+-- Esquema privado: funções internas ficam aqui, fora da API pública (PostgREST).
+create schema if not exists private;
+revoke all on schema private from public, anon;
+grant usage on schema private to authenticated;
+
 -- ---------------------------------------------------------------------------
 -- Perfis: um por usuário do Supabase Auth. O papel (role) só muda pelo banco.
 -- ---------------------------------------------------------------------------
@@ -14,7 +19,7 @@ create table public.perfis (
 alter table public.perfis enable row level security;
 
 -- Cria o perfil automaticamente no cadastro, sempre como 'cliente'.
-create function public.criar_perfil_novo_usuario()
+create function private.criar_perfil_novo_usuario()
 returns trigger
 language plpgsql
 security definer
@@ -26,13 +31,15 @@ begin
 end;
 $$;
 
+revoke execute on function private.criar_perfil_novo_usuario() from public, anon, authenticated;
+
 create trigger ao_criar_usuario
   after insert on auth.users
-  for each row execute function public.criar_perfil_novo_usuario();
+  for each row execute function private.criar_perfil_novo_usuario();
 
--- Diz se quem está logado é admin. "security definer" permite ler perfis
--- sem depender das políticas de perfis (evita recursão).
-create function public.eh_admin()
+-- Diz se quem está logado é admin. "security definer" lê perfis sem depender
+-- das políticas de perfis (evita recursão). Só responde sobre o próprio usuário.
+create function private.eh_admin()
 returns boolean
 language sql
 stable
@@ -44,6 +51,9 @@ as $$
     where id = (select auth.uid()) and role = 'admin'
   );
 $$;
+
+revoke execute on function private.eh_admin() from public, anon;
+grant execute on function private.eh_admin() to authenticated;
 
 create policy "perfis: usuário vê o próprio"
   on public.perfis for select
@@ -57,7 +67,7 @@ create policy "perfis: usuário edita o próprio"
   with check (id = (select auth.uid()));
 
 -- O usuário só pode alterar a coluna "nome". "role" fica fora do alcance dele.
-revoke update on public.perfis from anon, authenticated;
+revoke insert, update, delete on public.perfis from anon, authenticated;
 grant update (nome) on public.perfis to authenticated;
 
 -- ---------------------------------------------------------------------------
@@ -83,18 +93,18 @@ create policy "marcas: qualquer pessoa lê"
 create policy "marcas: só admin cria"
   on public.marcas for insert
   to authenticated
-  with check ((select public.eh_admin()));
+  with check ((select private.eh_admin()));
 
 create policy "marcas: só admin altera"
   on public.marcas for update
   to authenticated
-  using ((select public.eh_admin()))
-  with check ((select public.eh_admin()));
+  using ((select private.eh_admin()))
+  with check ((select private.eh_admin()));
 
 create policy "marcas: só admin apaga"
   on public.marcas for delete
   to authenticated
-  using ((select public.eh_admin()));
+  using ((select private.eh_admin()));
 
 -- ---------------------------------------------------------------------------
 -- Produtos (ligados à marca por marca_id). Preço em centavos.
@@ -123,23 +133,28 @@ create index produtos_marca_id_idx on public.produtos (marca_id);
 
 alter table public.produtos enable row level security;
 
-create policy "produtos: qualquer pessoa lê os ativos"
+create policy "produtos: visitante lê os ativos"
   on public.produtos for select
-  to anon, authenticated
-  using (ativo or (select public.eh_admin()));
+  to anon
+  using (ativo);
+
+create policy "produtos: logado lê os ativos (admin vê todos)"
+  on public.produtos for select
+  to authenticated
+  using (ativo or (select private.eh_admin()));
 
 create policy "produtos: só admin cria"
   on public.produtos for insert
   to authenticated
-  with check ((select public.eh_admin()));
+  with check ((select private.eh_admin()));
 
 create policy "produtos: só admin altera"
   on public.produtos for update
   to authenticated
-  using ((select public.eh_admin()))
-  with check ((select public.eh_admin()));
+  using ((select private.eh_admin()))
+  with check ((select private.eh_admin()));
 
 create policy "produtos: só admin apaga"
   on public.produtos for delete
   to authenticated
-  using ((select public.eh_admin()));
+  using ((select private.eh_admin()));
