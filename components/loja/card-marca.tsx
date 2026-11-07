@@ -9,11 +9,11 @@ export function CardMarca({ marca, totalPecas }: { marca: Marca; totalPecas: num
   return (
     <Link
       href={`/marcas/${marca.slug}`}
-      className="group flex h-full min-h-64 flex-col justify-between gap-10 bg-background p-8 text-foreground outline-none transition-colors duration-500 hover:bg-card focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring motion-reduce:transition-none"
+      className="group flex h-full min-h-64 min-w-0 flex-col overflow-hidden justify-between gap-10 bg-background p-8 text-foreground outline-none transition-colors duration-500 hover:bg-card focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring motion-reduce:transition-none"
     >
       <span className="rotulo text-muted-foreground">{totalPecas} {totalPecas === 1 ? "peça" : "peças"}</span>
       <ViewTransition name={`marca-${marca.slug}`}>
-        <NomeMarca marca={marca} className="inline-block text-4xl leading-tight transition-[letter-spacing] duration-700 ease-[cubic-bezier(.4,0,.2,1)] group-hover:tracking-[0.04em] sm:text-5xl motion-reduce:transition-none" />
+        <NomeMarca marca={marca} className="inline-block max-w-full break-words text-[clamp(1.75rem,3.2vw,2.75rem)] leading-tight transition-opacity duration-500 group-hover:opacity-80 motion-reduce:transition-none" />
       </ViewTransition>
       <span className="flex items-end justify-between gap-4">
         <span className="max-w-[30ch] text-sm leading-relaxed text-muted-foreground">{marca.descricao}</span>

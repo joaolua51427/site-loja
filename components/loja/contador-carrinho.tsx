@@ -13,7 +13,7 @@ export function ContadorCarrinho() {
       <ShoppingBag aria-hidden="true" className="size-4" />
       <span className="hidden sm:inline">Carrinho</span>
       {pronto && totalItens > 0 && (
-        <span aria-hidden="true" className="min-w-5 rounded-none bg-foreground px-1.5 py-0.5 text-center text-[11px] font-medium leading-none text-background tabular-nums">{totalItens}</span>
+        <span key={totalItens} aria-hidden="true" className="min-w-5 motion-safe:animate-[pulo_450ms_cubic-bezier(.2,.7,.2,1)] rounded-none bg-foreground px-1.5 py-0.5 text-center text-[11px] font-medium leading-none text-background tabular-nums">{totalItens}</span>
       )}
     </Link>
   );

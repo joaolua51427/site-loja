@@ -54,8 +54,8 @@ export function BoasVindas({ nomeLoja, slogan }: { nomeLoja: string; slogan: str
         <p className="rotulo animate-in fade-in fill-mode-both text-white/80 [animation-delay:200ms] [animation-duration:1200ms] motion-reduce:animate-none">
           Bem-vindo
         </p>
-        <h1 className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both [animation-delay:400ms] [animation-duration:1400ms] motion-reduce:animate-none">
-          <Logotipo nome={nomeLoja} tamanho="xl" />
+        <h1>
+          <Logotipo nome={nomeLoja} tamanho="xl" animado />
         </h1>
         <p className="animate-in fade-in fill-mode-both font-display text-2xl font-light italic text-white/90 [animation-delay:800ms] [animation-duration:1400ms] motion-reduce:animate-none sm:text-3xl">
           luxo &amp; elegância<span className="hidden sm:inline"> · </span><br className="sm:hidden" />atitude &amp; personalidade

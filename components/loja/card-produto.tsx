@@ -9,7 +9,7 @@ export function CardProduto({ produto, marcaSlug, precoFormatado }: { produto: P
   return (
     <Link
       href={`/marcas/${marcaSlug}/${produto.slug}`}
-      className="group revelar flex flex-col gap-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+      className="group flex flex-col gap-4 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-4 focus-visible:ring-offset-background"
     >
       <ViewTransition name={`produto-${produto.id}`}>
         <span className="relative block aspect-[200/310] overflow-hidden rounded-[2px] bg-muted/70">

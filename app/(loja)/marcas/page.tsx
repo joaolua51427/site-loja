@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 import { CardMarca } from "@/components/loja/card-marca";
+import { FaixaMarcas } from "@/components/loja/faixa-marcas";
+import { Manifesto } from "@/components/loja/manifesto";
+import { SelosConfianca } from "@/components/loja/selos-confianca";
 import { getMarcas, getProdutosDaMarca } from "@/lib/catalogo";
 
 export const metadata: Metadata = { title: "Marcas" };
@@ -20,15 +23,45 @@ export default function PaginaMarcas() {
         </div>
       </section>
 
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-14 sm:px-6 sm:py-20">
-        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">Cada marca tem o seu varal. Entre, passe pelas peças e abra a que chamar a sua atenção.</p>
+      <Manifesto
+        rotulo="Kyano Colletion"
+        texto="Peças que não precisam de explicação. Couro, camurça e algodão escolhidos para o homem que se veste com intenção."
+      />
+
+      <FaixaMarcas marcas={marcas} />
+
+      <div id="marcas" className="mx-auto flex w-full max-w-6xl scroll-mt-24 flex-col gap-10 px-4 py-20 sm:px-6 sm:py-24">
+        <div className="flex flex-col gap-3">
+          <p className="rotulo text-muted-foreground">As marcas</p>
+          <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">Cada marca tem o seu varal. Entre, passe pelas peças e abra a que chamar a sua atenção.</p>
+        </div>
         <ul className="grid gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
-          {marcas.map((marca) => (
-            <li key={marca.id} className="revelar bg-background">
+          {marcas.map((marca, i) => (
+            <li key={marca.id} className="revelar-cascata bg-background" style={{ ["--i" as string]: i % 3 }}>
               <CardMarca marca={marca} totalPecas={getProdutosDaMarca(marca.id).length} />
             </li>
           ))}
+          {/* Preenche a última linha da grade com um convite para o Instagram da loja. */}
+          <li
+            className="revelar-cascata bg-foreground text-background sm:col-span-[var(--resto-sm)] lg:col-span-[var(--resto-lg)]"
+            style={{ ["--i" as string]: marcas.length % 3, ["--resto-sm" as string]: (2 - (marcas.length % 2)) % 2 || 2, ["--resto-lg" as string]: (3 - (marcas.length % 3)) % 3 || 3 }}
+          >
+            <a
+              href="https://www.instagram.com/kyanocolletion/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex h-full min-h-64 flex-col justify-between gap-8 p-8 outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-background"
+            >
+              <span className="rotulo text-background/60">Bastidores</span>
+              <span className="font-display text-[clamp(1.75rem,3.2vw,2.75rem)] font-light italic leading-tight">Novas peças chegam primeiro no Instagram.</span>
+              <span className="rotulo linha-crescente self-start pb-1 group-hover:[background-size:100%_1px]">Seguir @kyanocolletion</span>
+            </a>
+          </li>
         </ul>
+      </div>
+
+      <div className="mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6">
+        <SelosConfianca />
       </div>
     </div>
   );

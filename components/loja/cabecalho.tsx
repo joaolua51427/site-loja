@@ -1,14 +1,16 @@
 import Link from "next/link";
 
+import { CabecalhoRolagem } from "@/components/loja/cabecalho-rolagem";
 import { ContadorCarrinho } from "@/components/loja/contador-carrinho";
 import { Logotipo } from "@/components/loja/logotipo";
 
 export function Cabecalho({ nomeLoja }: { nomeLoja: string }) {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-md">
+    <CabecalhoRolagem>
+    <header className="border-b border-border bg-background/90 backdrop-blur-md">
       <div className="mx-auto grid h-20 w-full max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-4 sm:px-6">
         <nav aria-label="Principal" className="flex items-center gap-1">
-          <Link href="/marcas" className="rotulo inline-flex min-h-11 items-center px-2 outline-none transition-colors hover:text-egeu focus-visible:ring-2 focus-visible:ring-ring">Marcas</Link>
+          <Link href="/marcas" className="rotulo linha-crescente inline-flex min-h-11 items-center px-2 outline-none transition-colors hover:text-egeu hover:[background-size:100%_1px] focus-visible:ring-2 focus-visible:ring-ring">Marcas</Link>
         </nav>
         <Link href="/" aria-label={`${nomeLoja}, início`} className="outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <Logotipo nome={nomeLoja} />
@@ -18,5 +20,6 @@ export function Cabecalho({ nomeLoja }: { nomeLoja: string }) {
         </div>
       </div>
     </header>
+    </CabecalhoRolagem>
   );
 }

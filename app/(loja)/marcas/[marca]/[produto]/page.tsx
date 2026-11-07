@@ -5,7 +5,9 @@ import { notFound } from "next/navigation";
 
 import { GaleriaProduto, type FotoProduto } from "@/components/loja/galeria-produto";
 import { NomeMarca } from "@/components/loja/nome-marca";
+import { CardProduto } from "@/components/loja/card-produto";
 import { SeletorProduto } from "@/components/loja/seletor-produto";
+import { SelosConfianca } from "@/components/loja/selos-confianca";
 import { getMarcas, getProduto, getProdutosDaMarca } from "@/lib/catalogo";
 import { formatarPreco } from "@/lib/formatar";
 
@@ -24,6 +26,9 @@ async function Conteudo({ params }: { params: PageProps<"/marcas/[marca]/[produt
   const achado = getProduto(marcaSlug, produtoSlug);
   if (!achado) notFound();
   const { marca, produto } = achado;
+  // Outras peças da mesma marca (até 4). Se a marca só tiver esta peça, a seção não aparece.
+  const daMarca = getProdutosDaMarca(marca.id).filter((p) => p.id !== produto.id);
+  const combina = daMarca.slice(0, 4);
   const corPrincipal = produto.cores[0].nome.toLowerCase();
 
   const fotos: FotoProduto[] = [
@@ -62,8 +67,27 @@ async function Conteudo({ params }: { params: PageProps<"/marcas/[marca]/[produt
             </ul>
           )}
           <SeletorProduto produtoId={produto.id} tamanhos={produto.tamanhos} cores={produto.cores} />
+          <div className="border-t border-border pt-6">
+            <SelosConfianca compacto />
+          </div>
         </div>
       </div>
+
+      {combina.length > 0 && (
+        <section aria-labelledby="titulo-combine" className="mt-24 border-t border-border pt-14">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <h2 id="titulo-combine" className="font-display text-3xl font-light tracking-tight sm:text-4xl">Combine com</h2>
+            <Link href={`/marcas/${marca.slug}`} className="rotulo linha-crescente pb-1 text-muted-foreground hover:text-foreground hover:[background-size:100%_1px]">Ver tudo da {marca.nome}</Link>
+          </div>
+          <ul className="grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4">
+            {combina.map((p, i) => (
+              <li key={p.id} className="revelar-cascata" style={{ ["--i" as string]: i % 4 }}>
+                <CardProduto produto={p} marcaSlug={marca.slug} precoFormatado={formatarPreco(p.precoCentavos)} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

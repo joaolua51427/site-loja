@@ -201,3 +201,49 @@
   ::view-transition-new(*) { animation: none !important; }
   .revelar { animation: none !important; }
 }
+
+/* ---------- Animações Kyano, parte 2 (skill ui-ux-pro-max: chegada desacelera, saída mais rápida) ---------- */
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Saída da página mais rápida que a entrada. */
+::view-transition-old(root) { animation-duration: 260ms; }
+::view-transition-new(root) { animation-duration: 460ms; }
+
+/* Cascata ao rolar: cada item começa um pouco depois do anterior (--i = posição na linha). */
+@utility revelar-cascata {
+  @supports (animation-timeline: view()) {
+    animation: revelar cubic-bezier(.2, .7, .2, 1) both;
+    animation-timeline: view();
+    animation-range: entry calc(var(--i, 0) * 6%) entry calc(55% + var(--i, 0) * 6%);
+  }
+}
+
+/* Faixa de marcas que desliza devagar e para quando o mouse passa por cima. */
+@keyframes deslizar { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@utility faixa-deslizante {
+  animation: deslizar 38s linear infinite;
+  &:hover { animation-play-state: paused; }
+}
+
+/* Manifesto: cada palavra "acende" (de cinza para preto) conforme a rolagem. */
+@keyframes acender { from { color: var(--muted-foreground); } to { color: var(--foreground); } }
+@utility palavra-acende {
+  @supports (animation-timeline: view()) {
+    animation: acender linear both;
+    animation-timeline: view();
+    animation-range: cover calc(18% + var(--i, 0) * 1.4%) cover calc(30% + var(--i, 0) * 1.4%);
+  }
+}
+
+/* Letras do logotipo surgindo uma a uma na tela de entrada. */
+@keyframes letra { from { opacity: 0; transform: translateY(0.35em); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+
+/* Contador do carrinho dá um "pulo" quando muda. */
+@keyframes pulo { 0% { transform: scale(1); } 40% { transform: scale(1.35); } 100% { transform: scale(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .revelar-cascata, .palavra-acende { animation: none !important; }
+  .faixa-deslizante { animation: none !important; transform: none !important; }
+}
