@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense, ViewTransition } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: PageProps<"/marcas/[marca]">)
   return { title: marca ? marca.nome : "Marca não encontrada" };
 }
 
-export default async function PaginaMarca({ params }: PageProps<"/marcas/[marca]">) {
+async function Conteudo({ params }: { params: PageProps<"/marcas/[marca]">["params"] }) {
   const { marca: slug } = await params;
   const marca = getMarca(slug);
   if (!marca) notFound();
@@ -46,7 +47,7 @@ export default async function PaginaMarca({ params }: PageProps<"/marcas/[marca]
       </nav>
 
       <div className="mx-auto mt-6 flex w-full max-w-6xl flex-col items-center gap-2 px-4 text-center sm:px-6">
-        <h1><NomeMarca marca={marca} className="text-5xl sm:text-6xl" /></h1>
+        <h1><ViewTransition name={`marca-${marca.slug}`}><NomeMarca marca={marca} className="inline-block text-5xl sm:text-6xl" /></ViewTransition></h1>
         <p className="max-w-[48ch] text-sm leading-relaxed text-muted-foreground">{marca.descricao}</p>
       </div>
 
@@ -65,5 +66,24 @@ export default async function PaginaMarca({ params }: PageProps<"/marcas/[marca]
         </ul>
       </section>
     </div>
+  );
+}
+
+function Esqueleto() {
+  return (
+    <div aria-busy="true" aria-label="Carregando marca" className="mx-auto flex w-full max-w-6xl flex-col items-center gap-6 px-4 py-16 sm:px-6">
+      <div className="h-14 w-72 animate-pulse bg-muted" />
+      <div className="h-4 w-96 max-w-full animate-pulse bg-muted" />
+      <div className="mt-6 h-[420px] w-full animate-pulse bg-muted/60" />
+    </div>
+  );
+}
+
+// A moldura da página aparece na hora; o que depende do endereço carrega dentro do Suspense.
+export default function PaginaMarca({ params }: PageProps<"/marcas/[marca]">) {
+  return (
+    <Suspense fallback={<Esqueleto />}>
+      <Conteudo params={params} />
+    </Suspense>
   );
 }

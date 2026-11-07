@@ -73,7 +73,7 @@ export function SeletorProduto({ produtoId, tamanhos, cores }: { produtoId: stri
           type="submit"
           disabled={estado.tipo === "enviando"}
           className={cn(
-            "inline-flex min-h-12 items-center justify-center rounded-none bg-foreground px-8 rotulo text-background outline-none transition-[opacity,transform] hover:-translate-y-px focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-60 motion-reduce:transition-none sm:self-start",
+            "inline-flex min-h-12 items-center justify-center rounded-none bg-foreground px-8 rotulo text-background outline-none botao-varredura hover:-translate-y-px focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-60 motion-reduce:transition-none sm:self-start",
           )}
         >
           {estado.tipo === "enviando" ? "Adicionando…" : "Adicionar ao carrinho"}

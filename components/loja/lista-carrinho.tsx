@@ -43,7 +43,7 @@ export function ListaCarrinho() {
     return (
       <div className="flex flex-col items-start gap-4 rounded-[2px] border border-dashed border-border p-8">
         <p className="text-base">Seu carrinho está vazio.</p>
-        <Link href="/marcas" className="inline-flex min-h-11 items-center rounded-none bg-foreground px-6 rotulo text-background outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">Ver marcas</Link>
+        <Link href="/marcas" className="inline-flex min-h-11 items-center rounded-none bg-foreground px-6 rotulo text-background botao-varredura outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">Ver marcas</Link>
       </div>
     );
   }
@@ -87,7 +87,7 @@ export function ListaCarrinho() {
         </div>
         <p className="text-xs leading-relaxed text-muted-foreground">Valores conferidos pelo servidor. Frete e pagamento são calculados no checkout.</p>
         {houveDescarte && <p className="text-xs text-destructive">Alguns itens não estão mais disponíveis e foram retirados do cálculo.</p>}
-        <button type="button" disabled className="inline-flex min-h-12 items-center justify-center rounded-none bg-foreground px-6 rotulo text-background opacity-50">
+        <button type="button" disabled className="inline-flex min-h-12 items-center justify-center rounded-none bg-foreground px-6 rotulo text-background botao-varredura opacity-50">
           Finalizar compra (em breve)
         </button>
       </aside>

@@ -11,12 +11,12 @@ export default function PaginaMarcas() {
   return (
     <div className="animate-in fade-in [animation-duration:700ms] motion-reduce:animate-none">
       <section className="relative isolate flex min-h-[46svh] items-end overflow-hidden bg-[oklch(0.2_0_0)] text-white">
-        <Image src="/fundos/santorini-oia.webp" alt="" fill priority sizes="100vw" className="-z-20 object-cover object-[50%_45%]" />
+        <Image src="/fundos/santorini-oia.webp" alt="" fill priority sizes="100vw" className="-z-20 object-cover object-[50%_45%] motion-safe:animate-[aproximar_16s_ease-out_both]" />
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-black/70 via-black/25 to-black/10" />
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 pb-12 pt-24 sm:px-6 sm:pb-16">
-          <p className="rotulo text-white/80">Nova coleção</p>
-          <h1 className="font-display text-5xl font-light tracking-tight text-balance sm:text-7xl">Escolha uma marca</h1>
-          <p className="max-w-[46ch] font-display text-xl font-light italic text-white/85">luxo &amp; elegância · atitude &amp; personalidade</p>
+          <p className="rotulo animate-in fade-in fill-mode-both text-white/80 [animation-delay:150ms] [animation-duration:900ms] motion-reduce:animate-none">Nova coleção</p>
+          <h1 className="animate-in fade-in slide-in-from-bottom-4 fill-mode-both font-display text-5xl font-light tracking-tight text-balance [animation-delay:300ms] [animation-duration:1100ms] motion-reduce:animate-none sm:text-7xl">Escolha uma marca</h1>
+          <p className="max-w-[46ch] animate-in fade-in fill-mode-both font-display text-xl font-light italic text-white/85 [animation-delay:600ms] [animation-duration:1100ms] motion-reduce:animate-none">luxo &amp; elegância · atitude &amp; personalidade</p>
         </div>
       </section>
 
@@ -24,7 +24,7 @@ export default function PaginaMarcas() {
         <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">Cada marca tem o seu varal. Entre, passe pelas peças e abra a que chamar a sua atenção.</p>
         <ul className="grid gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
           {marcas.map((marca) => (
-            <li key={marca.id} className="bg-background">
+            <li key={marca.id} className="revelar bg-background">
               <CardMarca marca={marca} totalPecas={getProdutosDaMarca(marca.id).length} />
             </li>
           ))}

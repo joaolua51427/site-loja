@@ -149,3 +149,55 @@
   from { transform: scale(1.08); }
   to { transform: scale(1); }
 }
+
+/* ---------- Animações Kyano ---------- */
+
+/* Surge ao rolar a página (CSS puro; em navegadores sem suporte o conteúdo simplesmente aparece). */
+@utility revelar {
+  @supports (animation-timeline: view()) {
+    animation: revelar linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+}
+@keyframes revelar {
+  from { opacity: 0; transform: translateY(28px); filter: blur(3px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+/* Botão com preenchimento que varre da esquerda. */
+@utility botao-varredura {
+  background-image: linear-gradient(var(--egeu), var(--egeu));
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  background-position: left;
+  transition: background-size 0.55s cubic-bezier(.65, 0, .35, 1), color 0.3s;
+  &:hover, &:focus-visible { background-size: 100% 100%; }
+}
+
+/* Linha fina que cresce embaixo de links e nomes de marca. */
+@utility linha-crescente {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  background-position: left bottom;
+  transition: background-size 0.6s cubic-bezier(.65, 0, .35, 1);
+}
+
+/* Transições entre páginas (View Transitions do React/Next). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+::view-transition-group(*) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+  .revelar { animation: none !important; }
+}

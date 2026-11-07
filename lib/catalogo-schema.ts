@@ -26,7 +26,7 @@ export const produtoSchema = z.object({
   marcaId: z.uuid(),
   nome: z.string().min(1).max(80),
   categoria: z.enum(["roupa", "calcado"]),
-  tipo: z.enum(["camiseta", "malha", "moletom", "jaqueta", "casaco", "tenis", "bota"]),
+  tipo: z.enum(["camiseta", "malha", "moletom", "jaqueta", "casaco", "tenis", "bota", "sandalia"]),
   precoCentavos: z.number().int().positive(),
   tamanhos: z.array(z.string().min(1).max(8)).min(1),
   cores: z.array(corSchema).min(1),

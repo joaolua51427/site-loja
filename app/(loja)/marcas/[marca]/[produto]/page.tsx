@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: PageProps<"/marcas/[marca]/[p
   return { title: achado ? `${achado.produto.nome} · ${achado.marca.nome}` : "Produto não encontrado" };
 }
 
-export default async function PaginaProduto({ params }: PageProps<"/marcas/[marca]/[produto]">) {
+async function Conteudo({ params }: { params: PageProps<"/marcas/[marca]/[produto]">["params"] }) {
   const { marca: marcaSlug, produto: produtoSlug } = await params;
   const achado = getProduto(marcaSlug, produtoSlug);
   if (!achado) notFound();
@@ -44,7 +45,7 @@ export default async function PaginaProduto({ params }: PageProps<"/marcas/[marc
       </nav>
 
       <div className="mt-8 grid items-start gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] md:gap-14">
-        <GaleriaProduto fotos={fotos} />
+        <GaleriaProduto fotos={fotos} nomeTransicao={`produto-${produto.id}`} />
 
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
@@ -64,5 +65,28 @@ export default async function PaginaProduto({ params }: PageProps<"/marcas/[marc
         </div>
       </div>
     </div>
+  );
+}
+
+function Esqueleto() {
+  return (
+    <div aria-busy="true" aria-label="Carregando produto" className="mx-auto grid w-full max-w-6xl gap-10 px-4 pb-20 pt-14 sm:px-6 md:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
+      <div className="mx-auto aspect-[200/310] w-full max-w-md animate-pulse bg-muted" />
+      <div className="flex flex-col gap-4">
+        <div className="h-5 w-32 animate-pulse bg-muted" />
+        <div className="h-12 w-64 animate-pulse bg-muted" />
+        <div className="h-6 w-24 animate-pulse bg-muted" />
+        <div className="mt-6 h-40 w-full animate-pulse bg-muted/70" />
+      </div>
+    </div>
+  );
+}
+
+// A moldura da página aparece na hora; o que depende do endereço carrega dentro do Suspense.
+export default function PaginaProduto({ params }: PageProps<"/marcas/[marca]/[produto]">) {
+  return (
+    <Suspense fallback={<Esqueleto />}>
+      <Conteudo params={params} />
+    </Suspense>
   );
 }

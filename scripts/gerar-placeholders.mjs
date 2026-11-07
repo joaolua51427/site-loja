@@ -143,6 +143,39 @@ function svgCalcado(tipo, lado, cor) {
     </g>`;
 }
 
+// Par de sandálias visto de cima, pendurado por um cordão no gancho.
+// Estilo "duas tiras com fivela" (padrão) ou "tira em H" (slug com izmir/chypre/oran).
+function svgSandalia(produto, lado, cor) {
+  const emH = /izmir|chypre|oran/.test(produto.slug);
+  const palmilha = emH ? escurecer(cor, 0.55) : "#C9A27A";
+  const sola = emH ? "#1C1C1E" : "#3A3330";
+  const tira = cor;
+  const tiraSombra = escurecer(cor, 0.25);
+  const fivela = "#B8B8B8";
+  const pe = (espelho) => `
+    <g transform="${espelho ? "translate(68 0) scale(-1 1)" : ""}">
+      <path d="M34,0 C52,0 60,18 60,44 C60,70 56,92 54,112 C52,132 46,150 34,150 C22,150 14,132 12,112 C10,92 6,70 8,44 C8,18 16,0 34,0 Z" fill="${sola}"/>
+      <path d="M34,4 C49,4 55,20 55,44 C55,68 52,90 50,110 C48,128 43,145 34,145 C25,145 19,128 17,110 C15,90 12,68 13,44 C13,20 19,4 34,4 Z" fill="${palmilha}"/>
+      ${emH
+        ? `<path d="M4,40 L22,40 L22,58 L46,58 L46,40 L64,40 L64,92 L46,92 L46,74 L22,74 L22,92 L4,92 Z" fill="${tira}"/>
+           <path d="M22,58 L46,58 L46,74 L22,74 Z" fill="${tiraSombra}"/>`
+        : `<rect x="2" y="30" width="64" height="20" rx="4" fill="${tira}"/>
+           <rect x="2" y="62" width="64" height="22" rx="4" fill="${tira}"/>
+           <rect x="2" y="47" width="64" height="3" fill="${tiraSombra}"/>
+           <rect x="2" y="81" width="64" height="3" fill="${tiraSombra}"/>
+           <rect x="48" y="33" width="10" height="14" rx="2" fill="none" stroke="${fivela}" stroke-width="2.2"/>
+           <rect x="48" y="66" width="10" height="15" rx="2" fill="none" stroke="${fivela}" stroke-width="2.2"/>`}
+    </g>`;
+  const espelhoGeral = lado === "costas" ? "translate(200 0) scale(-1 1)" : "";
+  return `
+    <g transform="${espelhoGeral}">
+      <path d="M100,40 C94,70 74,96 68,128" fill="none" stroke="#555" stroke-width="1.4"/>
+      <path d="M100,40 C106,70 126,96 132,128" fill="none" stroke="#555" stroke-width="1.4"/>
+      <g transform="translate(30 112) rotate(-6 34 75)">${pe(false)}</g>
+      <g transform="translate(102 112) rotate(6 34 75)">${pe(true)}</g>
+    </g>`;
+}
+
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 400, height: 620 }, deviceScaleFactor: 1 });
 for (const p of produtos) {
@@ -150,7 +183,7 @@ for (const p of produtos) {
   for (const lado of ["frente", "costas"]) {
     const destino = p.imagens[lado];
     if (!destino) continue;
-    const corpo = p.categoria === "calcado" ? svgCalcado(p.tipo, lado, cor) : svgRoupa(p.tipo, lado, cor);
+    const corpo = p.tipo === "sandalia" ? svgSandalia(p, lado, cor) : p.categoria === "calcado" ? svgCalcado(p.tipo, lado, cor) : svgRoupa(p.tipo, lado, cor);
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 310" width="400" height="620">${corpo}</svg>`;
     await page.setContent(`<html><body style="margin:0;background:transparent">${svg}</body></html>`);
     const arquivo = join(raiz, "public", destino);

@@ -46,7 +46,7 @@ export function Varal({ marcaSlug, pecas, titulo, rotuloAcao, hrefAcao }: {
       autoplay
       onItemOpen={(item) => router.push(`/marcas/${marcaSlug}/${item.id}`)}
       action={
-        <a href={hrefAcao} className="inline-flex min-h-12 items-center rounded-none bg-foreground px-10 rotulo text-background shadow-sm outline-none transition-[transform,box-shadow] hover:-translate-y-px hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none">
+        <a href={hrefAcao} className="inline-flex min-h-12 items-center rounded-none bg-foreground px-10 rotulo text-background botao-varredura shadow-sm outline-none transition-[transform,box-shadow] hover:-translate-y-px hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none">
           {rotuloAcao}
         </a>
       }
