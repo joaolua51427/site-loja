@@ -62,6 +62,16 @@ export async function getVariacoesDoProduto(produtoId: string): Promise<Variacao
   return (data ?? []).map((v) => ({ id: v.id, produtoId: v.produto_id, tamanho: v.tamanho, cor: v.cor, estoque: v.estoque }));
 }
 
+/** Configurações públicas da vitrine (frete grátis, Pix, parcelas). Cache curto. */
+export async function getConfiguracoesPublicas() {
+  "use cache";
+  cacheLife("minutes");
+  cacheTag("configuracoes");
+  const { data, error } = await supabasePublico().from("configuracoes").select("frete_gratis_acima_centavos, parcelas_max, parcelas_sem_juros, desconto_pix_percent").single();
+  if (error || !data) throw new Error("Falha ao carregar as configurações.");
+  return { freteGratisAcimaCentavos: data.frete_gratis_acima_centavos as number | null, parcelasMax: data.parcelas_max as number, parcelasSemJuros: data.parcelas_sem_juros as number, descontoPixPercent: data.desconto_pix_percent as number };
+}
+
 /** Consultas síncronas sobre um catálogo já carregado (mesmos nomes de antes). */
 export function consultas({ marcas, produtos }: Catalogo) {
   return {

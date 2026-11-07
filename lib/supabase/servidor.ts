@@ -3,13 +3,14 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-import { SUPABASE_CHAVE_PUBLICA, SUPABASE_URL } from "@/lib/supabase/env";
+import { exigirSupabase, SUPABASE_CHAVE_PUBLICA, SUPABASE_URL } from "@/lib/supabase/env";
 
 /**
  * Cliente com a sessão do usuário (cookies HttpOnly do Supabase).
  * Tudo o que ele faz passa pela RLS como o próprio usuário.
  */
 export async function supabaseServidor() {
+  exigirSupabase();
   const loja = await cookies();
   return createServerClient(SUPABASE_URL, SUPABASE_CHAVE_PUBLICA, {
     cookies: {

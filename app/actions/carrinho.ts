@@ -3,6 +3,9 @@
 import { z } from "zod";
 
 import { carrinhoSchema, type ItemCarrinho } from "@/lib/carrinho-schema";
+import { cepSchema, type Endereco } from "@/lib/frete/cep";
+import { cotarFrete, lerConfiguracoes, type OpcaoFrete } from "@/lib/frete/cotacao";
+import { dentroDoLimite } from "@/lib/limite-taxa";
 import { supabasePublico } from "@/lib/supabase/publico";
 import { usuarioAtual } from "@/lib/supabase/servidor";
 
@@ -34,18 +37,29 @@ export type LinhaCarrinho = {
   status: StatusLinha;
 };
 
+export type FreteDoResumo = {
+  cep: string;
+  endereco: Endereco | null;
+  opcoes: OpcaoFrete[];
+  escolhida: OpcaoFrete | null;
+  aviso: string | null;
+  erro: string | null;
+};
+
 export type ResumoCarrinho = {
   linhas: LinhaCarrinho[];
   subtotalCentavos: number;
-  freteCentavos: number | null; // calculado na etapa do CEP
+  freteCentavos: number | null; // null = ainda sem CEP/opção escolhida
   totalCentavos: number;
+  frete: FreteDoResumo | null;
+  freteGratisAcimaCentavos: number | null;
   /** Carrinho corrigido pelo servidor (quantidades limitadas, itens inexistentes removidos). */
   itensCorrigidos: ItemCarrinho[];
 };
 
 type LinhaBanco = {
   id: string; tamanho: string; cor: string; estoque: number;
-  produto: { id: string; slug: string; nome: string; preco_centavos: number; imagem_frente: string; marca: { nome: string; slug: string } | null } | null;
+  produto: { id: string; slug: string; nome: string; preco_centavos: number; imagem_frente: string; peso_gramas: number; altura_cm: number; largura_cm: number; comprimento_cm: number; marca: { nome: string; slug: string } | null } | null;
 };
 
 /** Lê as variações no banco (sem cache), com produto e marca. RLS esconde o que estiver inativo. */
@@ -53,16 +67,19 @@ async function buscarVariacoes(ids: string[]) {
   if (ids.length === 0) return new Map<string, LinhaBanco>();
   const { data, error } = await supabasePublico()
     .from("variacoes")
-    .select("id, tamanho, cor, estoque, produto:produtos(id, slug, nome, preco_centavos, imagem_frente, marca:marcas(nome, slug))")
+    .select("id, tamanho, cor, estoque, produto:produtos(id, slug, nome, preco_centavos, imagem_frente, peso_gramas, altura_cm, largura_cm, comprimento_cm, marca:marcas(nome, slug))")
     .in("id", ids);
   if (error) throw new Error("falha_banco");
   return new Map((data as unknown as LinhaBanco[]).map((v) => [v.id, v]));
 }
 
-/** Recalcula o carrinho com preços e estoque atuais do banco. */
-export async function resumoDoCarrinho(entrada: unknown): Promise<{ ok: true; resumo: ResumoCarrinho } | { ok: false; erro: string }> {
+const freteEntrada = z.object({ cep: cepSchema, opcaoId: z.string().max(40).optional() }).optional();
+
+/** Recalcula o carrinho com preços, estoque e frete atuais (tudo do servidor). */
+export async function resumoDoCarrinho(entrada: unknown, freteSolicitado?: unknown): Promise<{ ok: true; resumo: ResumoCarrinho } | { ok: false; erro: string }> {
   const r = carrinhoSchema.safeParse(entrada);
   if (!r.success) return { ok: false, erro: ERRO };
+  const f = freteEntrada.safeParse(freteSolicitado);
   try {
     const mapa = await buscarVariacoes([...new Set(r.data.map((i) => i.variacaoId))]);
     const linhas: LinhaCarrinho[] = r.data.map((item) => {
@@ -85,7 +102,34 @@ export async function resumoDoCarrinho(entrada: unknown): Promise<{ ok: true; re
     const itensCorrigidos = linhas
       .filter((l) => l.status !== "indisponivel")
       .map((l) => ({ variacaoId: l.variacaoId, quantidade: l.status === "esgotado" ? l.quantidadePedida : l.quantidade }));
-    return { ok: true, resumo: { linhas, subtotalCentavos, freteCentavos: null, totalCentavos: subtotalCentavos, itensCorrigidos } };
+    const config = await lerConfiguracoes();
+
+    // Frete: só quando houver CEP válido e itens com estoque. Valor sempre recalculado aqui.
+    let frete: FreteDoResumo | null = null;
+    const pacotes = linhas
+      .filter((l) => (l.status === "ok" || l.status === "reduzido") && l.produtoId)
+      .map((l) => {
+        const p = mapa.get(l.variacaoId)!.produto!;
+        return { produtoId: p.id, quantidade: l.quantidade, pesoGramas: p.peso_gramas, alturaCm: p.altura_cm, larguraCm: p.largura_cm, comprimentoCm: p.comprimento_cm, valorCentavos: l.precoUnitarioCentavos };
+      });
+    if (f.success && f.data && pacotes.length) {
+      if (!(await dentroDoLimite("frete", 30, 60))) {
+        frete = { cep: f.data.cep, endereco: null, opcoes: [], escolhida: null, aviso: null, erro: "Muitas consultas seguidas. Aguarde um minuto e tente de novo." };
+      } else {
+        const cot = await cotarFrete(f.data.cep, pacotes, subtotalCentavos);
+        frete = cot.ok
+          ? { cep: f.data.cep, endereco: cot.endereco, opcoes: cot.opcoes, escolhida: cot.opcoes.find((o) => o.id === f.data?.opcaoId) ?? cot.opcoes[0] ?? null, aviso: cot.aviso, erro: null }
+          : { cep: f.data.cep, endereco: null, opcoes: [], escolhida: null, aviso: null, erro: cot.erro };
+      }
+    }
+    const freteCentavos = frete?.escolhida ? frete.escolhida.precoCentavos : null;
+    return {
+      ok: true,
+      resumo: {
+        linhas, subtotalCentavos, freteCentavos, totalCentavos: subtotalCentavos + (freteCentavos ?? 0), itensCorrigidos,
+        frete, freteGratisAcimaCentavos: config.freteGratisAcimaCentavos,
+      },
+    };
   } catch {
     return { ok: false, erro: ERRO };
   }

@@ -7,6 +7,8 @@ import { AlertCircle, Minus, Plus, X } from "lucide-react";
 
 import { resumoDoCarrinho, type ResumoCarrinho } from "@/app/actions/carrinho";
 import { useCarrinho } from "@/components/loja/carrinho-provider";
+import { FreteCarrinho } from "@/components/loja/frete-carrinho";
+import { assinarEscolhaFrete, cepSalvo, opcaoSalva } from "@/components/loja/frete-estado";
 import { formatarPreco } from "@/lib/formatar";
 
 // Últimos preços vistos, só para avisar "o preço mudou". Fica na aba (sessionStorage),
@@ -26,14 +28,23 @@ export function ListaCarrinho() {
   const [erro, setErro] = React.useState(false);
   const [avisos, setAvisos] = React.useState<string[]>([]);
   const [ocupado, setOcupado] = React.useState<string | null>(null);
+  // CEP e opção de frete escolhidos (o valor do frete vem só do servidor).
+  const cep = React.useSyncExternalStore(assinarEscolhaFrete, cepSalvo, () => "");
+  const opcaoId = React.useSyncExternalStore(assinarEscolhaFrete, opcaoSalva, () => "");
+  // "Calculando" = existe um pedido mais novo do que a última resposta do servidor.
+  const chavePedido = JSON.stringify([itens, cep, opcaoId]);
+  const [chaveRespondida, setChaveRespondida] = React.useState("");
+  const calculando = Boolean(cep) && chaveRespondida !== chavePedido;
 
   // Sempre que o carrinho muda, o servidor recalcula preço e estoque.
   React.useEffect(() => {
     if (!pronto) return;
     let ativo = true;
-    resumoDoCarrinho(itens)
+    const pedidoFrete = cep ? { cep, opcaoId: opcaoId || undefined } : undefined;
+    resumoDoCarrinho(itens, pedidoFrete)
       .then(async (r) => {
         if (!ativo) return;
+        setChaveRespondida(chavePedido);
         if (!r.ok) { setErro(true); return; }
         setErro(false);
         setResumo(r.resumo);
@@ -54,9 +65,9 @@ export function ListaCarrinho() {
         if (novos.length) setAvisos((a) => [...new Set([...a, ...novos])]);
         await aplicarCorrecoes(r.resumo.itensCorrigidos);
       })
-      .catch(() => { if (ativo) setErro(true); });
+      .catch(() => { if (ativo) { setErro(true); setChaveRespondida(chavePedido); } });
     return () => { ativo = false; };
-  }, [itens, pronto, aplicarCorrecoes]);
+  }, [itens, pronto, aplicarCorrecoes, cep, opcaoId, chavePedido]);
 
   async function acao(variacaoId: string, fn: () => Promise<void>) {
     setOcupado(variacaoId);
@@ -129,9 +140,10 @@ export function ListaCarrinho() {
       <aside aria-label="Resumo do pedido" className="flex h-fit flex-col gap-4 border border-border p-6 lg:sticky lg:top-28">
         <dl className="flex flex-col gap-3 text-sm">
           <div className="flex items-baseline justify-between"><dt className="text-muted-foreground">Subtotal</dt><dd className="tabular-nums">{formatarPreco(resumo.subtotalCentavos)}</dd></div>
-          <div className="flex items-baseline justify-between"><dt className="text-muted-foreground">Frete</dt><dd className="text-right text-muted-foreground">{resumo.freteCentavos === null ? "Informe o CEP no checkout" : formatarPreco(resumo.freteCentavos)}</dd></div>
+          <div className="flex items-baseline justify-between"><dt className="text-muted-foreground">Frete</dt><dd className="text-right tabular-nums text-muted-foreground">{resumo.freteCentavos === null ? "Informe o CEP" : resumo.freteCentavos === 0 ? <span className="text-egeu">Grátis</span> : formatarPreco(resumo.freteCentavos)}</dd></div>
           <div className="flex items-baseline justify-between border-t border-border pt-3"><dt className="font-medium">Total</dt><dd className="text-lg font-medium tabular-nums">{formatarPreco(resumo.totalCentavos)}</dd></div>
         </dl>
+        <FreteCarrinho frete={resumo.frete} carregando={calculando} />
         <p className="text-xs leading-relaxed text-muted-foreground">Preços e estoque conferidos agora pelo servidor.{!usuario && " Entre na sua conta para salvar o carrinho."}</p>
         <button type="button" disabled className="rotulo inline-flex min-h-12 items-center justify-center bg-foreground px-6 text-background opacity-50" title={temEsgotado ? "Remova os itens esgotados" : "Disponível na próxima etapa"}>
           Finalizar compra (em breve)
