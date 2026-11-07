@@ -13,7 +13,8 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data:",
   "font-src 'self'",
-  "connect-src 'self'",
+  // Supabase (login e banco) é o único destino externo do navegador por enquanto.
+  `connect-src 'self' ${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""} ${(process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").replace("https://", "wss://")}`.trim(),
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

@@ -26,3 +26,15 @@ insert into public.produtos (id, marca_id, slug, nome, categoria, tipo, preco_ce
   ('c5e98106-1dc2-4087-a5b3-927808d93e08', 'd39bfdb9-dcee-4261-80a6-99149b10ea4a', 'triple-stitch-camurca-marinho', 'Tênis Triple Stitch camurça', 'calcado', 'tenis', 549000, array['38','39','40','41','42','43','44']::text[], '[{"nome": "Azul-marinho", "hex": "#253250"}]'::jsonb, 'Camurça azul-marinho com elásticos cruzados, sem cadarço.', array['Camurça','Elásticos cruzados','Calçar fácil']::text[], '/produtos/triple-stitch-camurca-marinho-frente.png', '/produtos/triple-stitch-camurca-marinho-costas.png', null),
   ('db219f43-47c1-4d4c-bde6-c84ce23aef28', 'd39bfdb9-dcee-4261-80a6-99149b10ea4a', 'triple-stitch-couro-branco', 'Tênis Triple Stitch couro', 'calcado', 'tenis', 549000, array['38','39','40','41','42','43','44']::text[], '[{"nome": "Off-white", "hex": "#EEEAE0"}]'::jsonb, 'Couro off-white com elásticos cruzados e sola de borracha.', array['Couro','Elásticos cruzados','Sola de borracha']::text[], '/produtos/triple-stitch-couro-branco-frente.png', '/produtos/triple-stitch-couro-branco-costas.png', null);
 commit;
+
+-- Variações (tamanho × cor) com estoque de teste. Uma variação com 1 unidade para o teste de compra concorrente.
+insert into public.variacoes (produto_id, tamanho, cor, sku, estoque)
+select p.id, t.tamanho, c.cor->>'nome',
+       upper(left(p.slug, 24)) || '-' || t.tamanho || '-' || upper(left(regexp_replace(c.cor->>'nome', '[^A-Za-z]', '', 'g'), 6)),
+       (abs(hashtext(p.slug || t.tamanho || (c.cor->>'nome'))) % 6)
+from public.produtos p
+cross join lateral unnest(p.tamanhos) as t(tamanho)
+cross join lateral jsonb_array_elements(p.cores) as c(cor)
+on conflict (produto_id, tamanho, cor) do nothing;
+update public.variacoes v set estoque = 1 from public.produtos p
+where v.produto_id = p.id and p.slug = 'triple-stitch-camurca-marinho' and v.tamanho = '42';

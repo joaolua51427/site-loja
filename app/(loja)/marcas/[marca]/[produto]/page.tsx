@@ -9,26 +9,29 @@ import { CardProduto } from "@/components/loja/card-produto";
 import { CarrosselProdutos } from "@/components/loja/carrossel-produtos";
 import { SeletorProduto } from "@/components/loja/seletor-produto";
 import { SelosConfianca } from "@/components/loja/selos-confianca";
-import { getMarcas, getProduto, getProdutosDaMarca } from "@/lib/catalogo";
+import { catalogo, getVariacoesDoProduto } from "@/lib/catalogo";
 import { formatarPreco } from "@/lib/formatar";
 
-export function generateStaticParams() {
-  return getMarcas().flatMap((m) => getProdutosDaMarca(m.id).map((p) => ({ marca: m.slug, produto: p.slug })));
+export async function generateStaticParams() {
+  const c = await catalogo();
+  return c.getMarcas().flatMap((m) => c.getProdutosDaMarca(m.id).map((p) => ({ marca: m.slug, produto: p.slug })));
 }
 
 export async function generateMetadata({ params }: PageProps<"/marcas/[marca]/[produto]">): Promise<Metadata> {
   const { marca, produto } = await params;
-  const achado = getProduto(marca, produto);
+  const achado = (await catalogo()).getProduto(marca, produto);
   return { title: achado ? `${achado.produto.nome} · ${achado.marca.nome}` : "Produto não encontrado" };
 }
 
 async function Conteudo({ params }: { params: PageProps<"/marcas/[marca]/[produto]">["params"] }) {
   const { marca: marcaSlug, produto: produtoSlug } = await params;
-  const achado = getProduto(marcaSlug, produtoSlug);
+  const c = await catalogo();
+  const achado = c.getProduto(marcaSlug, produtoSlug);
   if (!achado) notFound();
   const { marca, produto } = achado;
   // Outras peças da mesma marca (até 8). Se a marca só tiver esta peça, a seção não aparece.
-  const daMarca = getProdutosDaMarca(marca.id).filter((p) => p.id !== produto.id);
+  const variacoes = await getVariacoesDoProduto(produto.id);
+  const daMarca = c.getProdutosDaMarca(marca.id).filter((p) => p.id !== produto.id);
   const combina = daMarca.slice(0, 8);
   const corPrincipal = produto.cores[0].nome.toLowerCase();
 
@@ -67,7 +70,7 @@ async function Conteudo({ params }: { params: PageProps<"/marcas/[marca]/[produt
               {produto.detalhes.map((d) => <li key={d} className="rounded-[2px] border border-border px-3 py-1 text-xs text-muted-foreground">{d}</li>)}
             </ul>
           )}
-          <SeletorProduto produtoId={produto.id} nome={produto.nome} imagem={produto.imagens.frente} tamanhos={produto.tamanhos} cores={produto.cores} />
+          <SeletorProduto nome={produto.nome} imagem={produto.imagens.frente} tamanhos={produto.tamanhos} cores={produto.cores} variacoes={variacoes} />
           <div className="border-t border-border pt-6">
             <SelosConfianca compacto />
           </div>

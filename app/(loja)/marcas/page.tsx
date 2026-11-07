@@ -6,12 +6,13 @@ import { CardMarca } from "@/components/loja/card-marca";
 import { CilindroMarcas } from "@/components/loja/cilindro-marcas";
 import { Manifesto } from "@/components/loja/manifesto";
 import { SelosConfianca } from "@/components/loja/selos-confianca";
-import { getMarcas, getProdutosDaMarca } from "@/lib/catalogo";
+import { catalogo } from "@/lib/catalogo";
 
 export const metadata: Metadata = { title: "Marcas" };
 
-export default function PaginaMarcas() {
-  const marcas = getMarcas();
+export default async function PaginaMarcas() {
+  const c = await catalogo();
+  const marcas = c.getMarcas();
   return (
     <div className="animate-in fade-in [animation-duration:700ms] motion-reduce:animate-none">
       <section className="relative isolate flex min-h-[46svh] items-end overflow-hidden bg-[oklch(0.2_0_0)] text-white">
@@ -41,7 +42,7 @@ export default function PaginaMarcas() {
         <ul className="grid gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
           {marcas.map((marca, i) => (
             <li key={marca.id} className="revelar-cascata bg-background" style={{ ["--i" as string]: i % 3 }}>
-              <CardMarca marca={marca} totalPecas={getProdutosDaMarca(marca.id).length} />
+              <CardMarca marca={marca} totalPecas={c.getProdutosDaMarca(marca.id).length} />
             </li>
           ))}
           {/* Preenche a última linha da grade com um convite para o Instagram da loja. */}

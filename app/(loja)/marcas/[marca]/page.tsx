@@ -6,24 +6,25 @@ import { notFound } from "next/navigation";
 import { CardProduto } from "@/components/loja/card-produto";
 import { NomeMarca } from "@/components/loja/nome-marca";
 import { Varal, type PecaVaral } from "@/components/loja/varal";
-import { getMarca, getMarcas, getProdutosDaMarca } from "@/lib/catalogo";
+import { catalogo } from "@/lib/catalogo";
 import { formatarPreco } from "@/lib/formatar";
 
-export function generateStaticParams() {
-  return getMarcas().map((m) => ({ marca: m.slug }));
+export async function generateStaticParams() {
+  return (await catalogo()).getMarcas().map((m) => ({ marca: m.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/marcas/[marca]">): Promise<Metadata> {
   const { marca: slug } = await params;
-  const marca = getMarca(slug);
+  const marca = (await catalogo()).getMarca(slug);
   return { title: marca ? marca.nome : "Marca não encontrada" };
 }
 
 async function Conteudo({ params }: { params: PageProps<"/marcas/[marca]">["params"] }) {
   const { marca: slug } = await params;
-  const marca = getMarca(slug);
+  const c = await catalogo();
+  const marca = c.getMarca(slug);
   if (!marca) notFound();
-  const produtos = getProdutosDaMarca(marca.id);
+  const produtos = c.getProdutosDaMarca(marca.id);
 
   const pecas: PecaVaral[] = produtos.map((p) => ({
     id: p.id,

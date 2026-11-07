@@ -2,12 +2,14 @@ import Link from "next/link";
 
 import { CabecalhoRolagem } from "@/components/loja/cabecalho-rolagem";
 import { ContadorCarrinho } from "@/components/loja/contador-carrinho";
+import { LinkConta } from "@/components/loja/link-conta";
 import { Logotipo } from "@/components/loja/logotipo";
 import { Navegacao, type ItemBusca, type ItemMenuMarca } from "@/components/loja/navegacao";
-import { getMarcaPorId, getMarcas, getProdutosDaMarca, getTodosProdutos } from "@/lib/catalogo";
+import { catalogo } from "@/lib/catalogo";
 import { formatarPreco } from "@/lib/formatar";
 
-export function Cabecalho({ nomeLoja }: { nomeLoja: string }) {
+export async function Cabecalho({ nomeLoja }: { nomeLoja: string }) {
+  const { getMarcaPorId, getMarcas, getProdutosDaMarca, getTodosProdutos } = await catalogo();
   // Só dados públicos vão para o navegador: nome, coleção, foto e preço formatado.
   const marcas: ItemMenuMarca[] = getMarcas().map((m) => ({ nome: m.nome, slug: m.slug, total: getProdutosDaMarca(m.id).length }));
   const produtos: ItemBusca[] = getTodosProdutos().map((p) => {
@@ -25,7 +27,8 @@ export function Cabecalho({ nomeLoja }: { nomeLoja: string }) {
           <Link href="/" aria-label={`${nomeLoja}, início`} className="outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Logotipo nome={nomeLoja} />
           </Link>
-          <div className="flex justify-end">
+          <div className="flex items-center justify-end gap-1">
+            <LinkConta />
             <ContadorCarrinho />
           </div>
         </div>

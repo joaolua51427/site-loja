@@ -1,11 +1,9 @@
 import { z } from "zod";
 
-// O que o navegador pode enviar sobre o carrinho: só IDs, variação e quantidade.
+// O que o navegador pode enviar sobre o carrinho: só a variação (tamanho/cor) e a quantidade.
 // Preço, total, frete e desconto NUNCA vêm daqui; o servidor calcula.
 export const itemCarrinhoSchema = z.object({
-  produtoId: z.uuid(),
-  tamanho: z.string().min(1).max(8),
-  cor: z.string().min(1).max(40),
+  variacaoId: z.uuid(),
   quantidade: z.number().int().min(1).max(10),
 });
 
